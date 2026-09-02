@@ -80,11 +80,25 @@
       "Bash(git push *)",
       "Bash(kill -9 39934)",
       "Bash(grep -n 'split\\(\"/\"\\)\\\\|split\\('\\\\''/'\\\\''\\)\\\\|\\\\.partition\\(\"/\"\\)\\\\|\\\\.partition\\('\\\\''/'\\\\''\\)' -B8 -A15 __TRACKED_VAR__/llm.py)",
-      "Bash(python3 -m py_compile app/session/turn_history.py app/session/__init__.py app/orchestration/router.py app/orchestration/fast_path.py app/agents/agent_factory.py app/server/main.py)"
+      "Bash(python3 -m py_compile app/session/turn_history.py app/session/__init__.py app/orchestration/router.py app/orchestration/fast_path.py app/agents/agent_factory.py app/server/main.py)",
+      "Bash(git reset *)",
+      "Bash(git branch *)",
+      "Bash(git stash *)",
+      "Bash(npm ls *)",
+      "Bash(mkdir -p /tmp/mmd_check)",
+      "Bash(awk '/^```mermaid$/{n++; f=\"/tmp/mmd_check/diagram\" n \".mmd\"; capture=1; next} /^```$/{if\\(capture\\){capture=0; close\\(f\\)}; next} capture{print > f}' README.md)",
+      "Read(//private/tmp/mmd_check/**)",
+      "Bash(timeout 90 npx -y @mermaid-js/mermaid-cli@10 -i diagram1.mmd -o diagram1.svg --puppeteerConfigFile /dev/null)",
+      "Bash(npx -y @mermaid-js/mermaid-cli@10 -i diagram1.mmd -o diagram1.svg)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(node check.mjs)"
     ],
     "additionalDirectories": [
       "/tmp",
-      "/private/tmp"
+      "/private/tmp",
+      "/tmp/mmd_check",
+      "/private/tmp/mmd_check"
     ]
   }
 }
