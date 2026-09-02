@@ -27,8 +27,16 @@ one draft.
 from __future__ import annotations
 
 from app.agents import build_fast_analyst
+from app.session import format_history_for_prompt
 
 
-def run_fast_analysis(question: str) -> str:
-    """Answer one analytical question directly, in one pass."""
-    return build_fast_analyst().kickoff(question).raw
+def run_fast_analysis(question: str, history: list[tuple[str, str]] | None = None) -> str:
+    """Answer one analytical question directly, in one pass.
+
+    ``history`` — this session's recent (question, answer) pairs — lets a
+    follow-up like "compare that to last month" or "just use the data we
+    have" resolve what "that"/"we" refers to, without re-running any prior
+    query: it's plain text in the prompt, not a second tool call.
+    """
+    prompt = format_history_for_prompt(history or []) + f'Now answer this question: "{question}"'
+    return build_fast_analyst().kickoff(prompt).raw

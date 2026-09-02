@@ -209,7 +209,13 @@ def build_conversational_agent() -> Agent:
             "Reply warmly and briefly to greetings, thanks, and small talk. "
             "If asked what you can do, explain you can answer analytical "
             "questions about the connected dataset (orders, customers, "
-            "products, revenue, etc.) — give one or two example questions."
+            "products, revenue, etc.) — give one or two example questions. "
+            "If the message includes 'Earlier in this same conversation', "
+            "you've already talked with this person — do not repeat the "
+            "same canned explanation or the same example questions again. "
+            "Build on what was already said: reference it briefly, then add "
+            "something new (different example questions, more specific "
+            "suggestions, or a direct answer if this is a follow-up)."
         ),
         backstory="A friendly front door to the analytics team, for everything that isn't itself an analytical question.",
         llm=build_llm(role="conversational"),
@@ -273,7 +279,13 @@ def build_fast_analyst() -> Agent:
             "honesty about the method beats avoiding a word.\n"
             "- Stay concise: this is a tight analyst note, not a report — "
             "skip any of the steps above that plainly don't apply to the "
-            "question asked."
+            "question asked.\n"
+            "- If the message includes 'Earlier in this same conversation', "
+            "use it to resolve references ('that product', 'the same "
+            "period', 'just use what we have') without re-deriving figures "
+            "already given there — but still run fresh SQL for any number "
+            "this specific question actually needs; never state a figure "
+            "you haven't just verified."
         ),
         backstory=(
             "A fast, careful data analyst who answers directly but never "

@@ -75,7 +75,12 @@
       "Bash(git fetch *)",
       "Bash(git check-ignore *)",
       "Bash(git checkout *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(kill -9 39934)",
+      "Bash(grep -n 'split\\(\"/\"\\)\\\\|split\\('\\\\''/'\\\\''\\)\\\\|\\\\.partition\\(\"/\"\\)\\\\|\\\\.partition\\('\\\\''/'\\\\''\\)' -B8 -A15 __TRACKED_VAR__/llm.py)",
+      "Bash(python3 -m py_compile app/session/turn_history.py app/session/__init__.py app/orchestration/router.py app/orchestration/fast_path.py app/agents/agent_factory.py app/server/main.py)"
     ],
     "additionalDirectories": [
       "/tmp",

@@ -31,7 +31,7 @@ from app.critique.evidence import start_evidence_log
 from app.data import get_catalog
 from app.events import SENTINEL, bind_new_queue, install_listener
 from app.orchestration import Intent, classify_intent, decline_off_topic, run_chitchat, run_fast_analysis
-from app.session import start_session_memory
+from app.session import get_recent_history, record_turn, start_session_memory
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("chatbot.server")
@@ -93,14 +93,21 @@ async def chat_stream(request: ChatRequest) -> EventSourceResponse:
             """Runs in a worker thread (see asyncio.to_thread below). Routes
             first: chitchat gets one direct reply, an off-topic question
             gets an instant decline, and only a genuinely analytical
-            question runs the (fast-path) analysis."""
+            question runs the (fast-path) analysis. The session's last few
+            turns (see app.session.turn_history) are handed to whichever
+            lane runs, so a follow-up isn't answered cold — and the new
+            result is recorded back so the *next* turn sees it too."""
+            history = get_recent_history(request.session_id)
             intent = classify_intent(request.message)
             event_queue.put({"type": "routed", "intent": intent.value})
             if intent is Intent.CHITCHAT:
-                return run_chitchat(request.message)
-            if intent is Intent.OFF_TOPIC:
-                return decline_off_topic()
-            return run_fast_analysis(request.message)
+                result = run_chitchat(request.message, history)
+            elif intent is Intent.OFF_TOPIC:
+                result = decline_off_topic()
+            else:
+                result = run_fast_analysis(request.message, history)
+            record_turn(request.session_id, request.message, result)
+            return result
 
         async def run_crew() -> None:
             try:

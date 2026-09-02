@@ -24,6 +24,7 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 from app.agents import build_conversational_agent, build_router
+from app.session import format_history_for_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -77,9 +78,17 @@ def classify_intent(message: str) -> Intent:
     return Intent.ANALYTICAL
 
 
-def run_chitchat(message: str) -> str:
-    """Answer a non-analytical message directly, with no crew involved."""
-    return build_conversational_agent().kickoff(message).raw
+def run_chitchat(message: str, history: list[tuple[str, str]] | None = None) -> str:
+    """Answer a non-analytical message directly, with no crew involved.
+
+    ``history`` — this session's recent (question, answer) pairs (see
+    ``app.session.turn_history``) — is prepended as plain text so a
+    follow-up like "what else can you help with?" doesn't get the exact
+    same canned answer as the question right before it; the agent can see
+    what it already said.
+    """
+    prompt = format_history_for_prompt(history or []) + f'The user now says: "{message}"'
+    return build_conversational_agent().kickoff(prompt).raw
 
 
 def decline_off_topic() -> str:

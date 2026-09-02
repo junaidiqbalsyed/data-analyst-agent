@@ -33,6 +33,37 @@ from crewai import LLM
 from app.config import Settings, get_settings
 
 
+def _model_string_for_custom_openai(model: str) -> str:
+    """Work around a CrewAI quirk so ``LLM_MODEL`` can name a real model on
+    *any* OpenAI-compatible endpoint, not just Azure-style deployment names.
+
+    With ``custom_openai=True``, ``crewai.LLM`` unconditionally does::
+
+        prefix, sep, rest = model.partition("/")
+        model_string = rest if sep and prefix.lower() == "openai" else model
+
+    i.e. it treats a leading ``openai/`` as a litellm-style routing hint and
+    strips it before calling the API. That's harmless for Azure (deployment
+    names like ``gpt-5.6-luna`` have no slash, so nothing is touched) but
+    wrong for endpoints — NVIDIA NIM among them — that name a model
+    ``openai/<name>`` *literally* (they namespace by original provider:
+    ``openai/gpt-oss-120b``, ``meta/llama-3.1-70b-instruct``, and so on). For
+    those, CrewAI's strip turns a valid model id into an invalid one
+    (``gpt-oss-120b``, which 404s) before it ever reaches the endpoint.
+
+    Every other prefix (``meta/``, ``mistralai/``, ``nvidia/``, or no prefix
+    at all) already passes through untouched, since the strip only fires
+    when the prefix is exactly ``openai``. So only that one case needs a
+    workaround: doubling the prefix. CrewAI's ``partition("/")`` only
+    strips the *first* occurrence, so ``openai/openai/gpt-oss-120b`` comes
+    out the other side as the exact literal id the endpoint expects:
+    ``openai/gpt-oss-120b``.
+    """
+    if model.lower().startswith("openai/"):
+        return f"openai/{model}"
+    return model
+
+
 def build_llm(*, role: str, stream: bool = True) -> LLM:
     """Construct one OpenAI-SDK-backed LLM instance for a specific agent role.
 
@@ -62,7 +93,7 @@ def build_llm(*, role: str, stream: bool = True) -> LLM:
     settings: Settings = get_settings()
     model = settings.llm_model_overrides.get(role, settings.llm_model)
     return LLM(
-        model=model,
+        model=_model_string_for_custom_openai(model),
         base_url=settings.llm_base_url,
         api_key=settings.llm_api_key,
         custom_openai=True,  # forces the native openai-SDK provider, bypassing litellm
