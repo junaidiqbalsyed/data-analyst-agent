@@ -1,0 +1,17 @@
+[project]
+name = "workshop-day-2"
+version = "0.1.0"
+description = "Multi-level CrewAI analytics chatbot: hierarchical + sequential orchestration over a dynamic CSV dataset, streamed to a Streamlit UI over SSE."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "crewai>=1.15.18",
+    "duckdb>=1.5.5",
+    "fastapi>=0.141.1",
+    "openai>=2.54.0",
+    "pydantic-settings>=2.15.0",
+    "requests>=2.34.2",
+    "sse-starlette>=3.4.8",
+    "streamlit>=1.63.0",
+    "uvicorn[standard]>=0.52.4",
+]
