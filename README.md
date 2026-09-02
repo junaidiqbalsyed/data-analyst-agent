@@ -100,11 +100,6 @@ frontend/
 main.py                      convenience launcher for both processes
 ```
 
-`to_delete/` holds reference notes from an earlier report-generation agent;
-the guard-rail pattern in `app/critique/analyst_critic.py` (deterministic
-checks before an LLM critic, capped revise loop, fail-open) is adapted from
-it — see that module's docstring for the mapping.
-
 ## Diagrams
 
 Everything below is generated straight from the classes and functions that
