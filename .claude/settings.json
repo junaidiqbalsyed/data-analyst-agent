@@ -92,7 +92,10 @@
       "Bash(npx -y @mermaid-js/mermaid-cli@10 -i diagram1.mmd -o diagram1.svg)",
       "Bash(npm init *)",
       "Bash(npm install *)",
-      "Bash(node check.mjs)"
+      "Bash(node check.mjs)",
+      "Read(//Users/junaid/.Trash/**)",
+      "Bash(git log *)",
+      "Bash(git ls-tree *)"
     ],
     "additionalDirectories": [
       "/tmp",
